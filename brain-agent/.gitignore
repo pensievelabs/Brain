@@ -1,0 +1,18 @@
+# Environments
+venv/
+.env
+
+# MacOS files
+.DS_Store
+
+# Python Cache
+__pycache__/
+*.pyc
+
+# IDEs
+.vscode/
+.idea/
+
+# Temp files
+temp_voice_*.ogg
+*.log

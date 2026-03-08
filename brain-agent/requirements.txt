@@ -1,0 +1,5 @@
+python-telegram-bot
+litellm
+chromadb
+google-generativeai
+nest-asyncio
