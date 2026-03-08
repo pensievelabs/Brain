@@ -102,7 +102,7 @@ def remove_from_index(filepath: str):
     except Exception as e:
         logger.error(f"Error removing index for {filepath}: {e}")
 
-def semantic_search(query_text: str, n_results: int = 3):
+def semantic_search(query_text: str, n_results: int = 5):
     """
     Queries ChromaDB and returns (filepath, content_snippet) tuples.
     Filters out results above the similarity threshold.
@@ -319,6 +319,16 @@ def build_system_prompt(search_results: list) -> str:
             rel_path = os.path.relpath(filepath, VAULT_DIR) if filepath.startswith(VAULT_DIR) else filepath
             context_parts.append(f"### File: `{rel_path}`\n```\n{snippet}\n```\n")
         context_str = "\n".join(context_parts)
+        # Query-specific instructions for citation and source filtering
+        context_str += (
+            "\n## Query Response Instructions\n"
+            "When answering a query, follow these rules strictly:\n"
+            "1. Cite every vault file you reference using `📎 Source: [relative path]`.\n"
+            "2. If you add information from your own training data beyond what the vault contains, "
+            "put it under a `📚 Additional Context (not from your vault)` header. Never blend it silently.\n"
+            "3. Exclude unvetted sources (Grokipedia, unmoderated wikis). Only cite authoritative, expert sources.\n"
+            "4. Lead with vault content. Only supplement if the vault is incomplete or the user asks for more.\n"
+        )
     else:
         context_str = "## Vault Context\nNo existing relevant files found in the vault."
 

@@ -31,6 +31,12 @@ Reply **yes** to confirm, or tell me what to change.
 ## Bypass: Queries & Retrieval
 If the intent is a **query** (the user is asking a question, searching for information), skip the proposal flow entirely. Search the vault, read relevant files, and reply with the content immediately. No confirmation needed because no files are mutated.
 
+### Query Response Rules
+1. **Cite your sources.** Every claim drawn from the vault MUST include a reference. Use the format: `📎 Source: [relative filepath]` after each referenced point or as a grouped list at the end.
+2. **Label extra knowledge.** If you supplement the vault content with information from your own training data, you MUST clearly separate it under a `📚 Additional Context (not from your vault)` header. Never silently blend general knowledge into vault-sourced answers.
+3. **Source quality filter.** Only cite authoritative, expert sources. **Exclude** unvetted or unreliable sources such as Grokipedia, random wikis, or crowd-sourced pages with no editorial oversight.
+4. **Vault-first.** Always prioritize vault content. If the vault has relevant notes, lead with those. Only add general knowledge if the vault content is incomplete or the user explicitly asks for more.
+
 ## Bypass: Coach & Explore Modes
 `/coach` and `/explore` slash commands bypass the proposal flow and execute their respective modes directly.
 
