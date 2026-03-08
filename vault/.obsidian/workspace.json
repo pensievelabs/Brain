@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "1-Projects/cleanreader-phonics.md",
+                "file": "1-Projects/calm-tech-apps.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "cleanreader-phonics"
+              "title": "calm-tech-apps"
             }
           }
         ]
@@ -94,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "1-Projects/cleanreader-phonics.md",
+                "file": "1-Projects/calm-tech-apps.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +104,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for cleanreader-phonics"
+              "title": "Backlinks for calm-tech-apps"
             }
           },
           {
@@ -113,12 +113,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "1-Projects/cleanreader-phonics.md",
+                "file": "1-Projects/calm-tech-apps.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from cleanreader-phonics"
+              "title": "Outgoing links from calm-tech-apps"
             }
           },
           {
@@ -156,13 +156,13 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "1-Projects/cleanreader-phonics.md",
+                "file": "1-Projects/calm-tech-apps.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of cleanreader-phonics"
+              "title": "Outline of calm-tech-apps"
             }
           }
         ]
@@ -185,7 +185,9 @@
   },
   "active": "37b4a3319c404463",
   "lastOpenFiles": [
-    "1-Projects/calm-tech-apps.md",
-    "1-Projects/cleanreader-phonics.md"
+    "1-Projects/cleanreader-phonics.md",
+    "1-Projects/Template.md",
+    "Instructions.md",
+    "1-Projects/calm-tech-apps.md"
   ]
 }
