@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "1-Projects/calm-tech-apps.md",
+                "file": "2-Areas/calm-tech-apps.md",
                 "mode": "source",
                 "source": false
               },
@@ -94,7 +94,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "1-Projects/calm-tech-apps.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -104,7 +103,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for calm-tech-apps"
+              "title": "Backlinks"
             }
           },
           {
@@ -113,12 +112,11 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "1-Projects/calm-tech-apps.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "Outgoing links from calm-tech-apps"
+              "title": "Outgoing links"
             }
           },
           {
@@ -156,13 +154,12 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "1-Projects/calm-tech-apps.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "Outline of calm-tech-apps"
+              "title": "Outline"
             }
           }
         ]
@@ -183,11 +180,47 @@
       "bases:Create new base": false
     }
   },
-  "active": "37b4a3319c404463",
+  "floating": {
+    "id": "def69b85eebf59b8",
+    "type": "floating",
+    "children": [
+      {
+        "id": "205428101c7b75d4",
+        "type": "window",
+        "children": [
+          {
+            "id": "4d44bc1ca049584e",
+            "type": "tabs",
+            "children": [
+              {
+                "id": "40223cdc9754d160",
+                "type": "leaf",
+                "state": {
+                  "type": "empty",
+                  "state": {},
+                  "icon": "lucide-file",
+                  "title": "New tab"
+                }
+              }
+            ]
+          }
+        ],
+        "direction": "vertical",
+        "x": 244,
+        "y": 35,
+        "width": 1024,
+        "height": 800,
+        "maximize": false,
+        "zoom": 0
+      }
+    ]
+  },
+  "active": "40223cdc9754d160",
   "lastOpenFiles": [
+    "2-Areas/calm-tech-apps.md",
     "1-Projects/cleanreader-phonics.md",
     "1-Projects/Template.md",
-    "Instructions.md",
-    "1-Projects/calm-tech-apps.md"
+    "1-Projects/calm-tech-apps.md",
+    "Instructions.md"
   ]
 }

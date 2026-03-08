@@ -1,7 +1,7 @@
 ---
 date: 2026-03-08
 tags:
-  - "#project"
+  - "#areas"
 ---
 # Calm Tech Apps
 
@@ -14,4 +14,4 @@ Investigating principles of calm technology and potential application ideas.
 ## Notes
 
 ## Next Actions
-- [ ] Research existing calm tech principles and examples
+- [x] Research existing calm tech principles and examples
