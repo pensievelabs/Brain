@@ -28,6 +28,8 @@ class Config:
         # Similarity Threshold — gemini-embedding-001 cosine distances:
         # 0.3-0.5 = strong match, 0.5-0.7 = moderate match, >0.8 = weak/unrelated
         self.SIMILARITY_THRESHOLD = 0.75
+        self.LINK_SIMILARITY_THRESHOLD = 0.55  # Tighter threshold for auto-linking reading stubs to projects
+        self.READING_STALE_DAYS = 90  # Days before a #to-read item triggers the bankruptcy prompt
         self.MAX_SNIPPET_CHARS = 500
         self.MAX_TOOL_ROUNDS = 5
 

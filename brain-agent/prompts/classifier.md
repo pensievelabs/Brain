@@ -12,5 +12,6 @@ Classify every incoming message into exactly one of these intents:
 | `archival` | Completion or deactivation. "Done with…", "Finished…", "No longer pursuing…" | `#archive` | `4-Archives/` |
 | `query` | Question, retrieval request. "What did I write about…", "Find my note on…", "?" | — | No mutation |
 | `correction` | Modifies a previous proposal. "No, put it in…", "Change that to…", "Actually…" | — | Re-propose |
+| `reading_material` | URL, article title, book recommendation. "Check out…", "I want to read…", "Interesting article: …", "Book recommendation: …" | `#resource` | `3-Resources/` |
 
 **When ambiguous:** Ask the user: "Is this a new project, a thought to file, or something else?"

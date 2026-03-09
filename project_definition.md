@@ -18,7 +18,8 @@ Uses a **modular, interface-driven architecture** — messaging, LLM, memory, an
 ├── memory/                      # ChromaDB implementation (swappable for Pinecone, etc.)
 ├── vault/                       # VaultManager: secure file ops + tool schemas
 ├── orchestrator/                # Central brain: search → prompt → LLM → tools → response
-├── modules/                     # Future: coach, calendar, journal, task scheduler
+├── modules/                     # Capability modules
+│   └── task_scheduler.py        # Reading queue bankruptcy protocol
 ├── prompts/                     # Per-module system prompts (classifier, coach, explore)
 ├── briefing.py                  # Daily cron script for morning summaries
 ├── chroma_db/                   # ChromaDB persistent vector store
@@ -67,9 +68,11 @@ Central brain — transport-agnostic. Receives `(user_id, text)`, returns respon
 
 ### 6. Vault Manager (`vault/vault_tools.py`)
 * Secure file operations with path traversal prevention
-* Tools: `read_vault_file`, `overwrite_vault_file`, `list_vault_files`, `move_vault_file`
+* Tools: `read_vault_file`, `overwrite_vault_file`, `list_vault_files`, `move_vault_file`, `create_reading_stub`, `append_to_file`
 * Auto-updates vector index on file mutations
 * Provides tool schemas for LLM function calling
+* `create_reading_stub` generates independent reading queue files in `3-Resources/` with `#to-read` tags
+* `append_to_file` injects reading tasks into project files for automatic cross-linking
 
 ### 7. Configuration (`config.py`)
 Single source of truth for env vars, paths, model names, and thresholds.
@@ -81,3 +84,10 @@ Single source of truth for env vars, paths, model names, and thresholds.
 
 ### 9. Sync Engine (sync.sh)
 * (To be configured post-deployment)
+
+### 10. Task Scheduler (`modules/task_scheduler.py`)
+* Bankruptcy protocol for `#to-read` items in `3-Resources/`
+* `scan_stale_readings()` detects items older than 90 days (configurable via `READING_STALE_DAYS`)
+* `/prune` slash command triggers scan and prompts user
+* `/archive_reading` moves stale items to `4-Archives/reading/`
+* `/keep` resets frontmatter date to today, retaining items for another cycle

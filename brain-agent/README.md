@@ -33,7 +33,8 @@ brain-agent/
 ├── orchestrator/                # Central routing and workflow engine
 │   └── orchestrator.py          # Orchestrator class
 │
-├── modules/                     # Future capability modules (coach, calendar, etc.)
+├── modules/                     # Capability modules
+│   └── task_scheduler.py        # Reading queue bankruptcy protocol
 │
 ├── prompts/                     # Per-module system prompts (.md)
 │   ├── classifier.md
@@ -71,6 +72,7 @@ Every incoming message is classified into one of these intents:
 | `archival` | Moves to `4-Archives/` |
 | `query` | Replies with content, no file mutation |
 | `correction` | Re-proposes previous action with changes |
+| `reading_material` | Creates a reading stub in `3-Resources/`, links to relevant project |
 
 ### Propose → Confirm → Act
 For vault-mutating actions, the bot:
@@ -81,11 +83,24 @@ For vault-mutating actions, the bot:
 
 Queries and `/coach`/`/explore` skip confirmation.
 
+### Reading Queue
+Book recommendations, article URLs, or reading suggestions are classified as `reading_material`:
+1. A resource stub is created in `3-Resources/` with `#to-read` tag
+2. Semantic search finds the most relevant `#project` note
+3. If a match is found, a `- [ ] Read: [[stub]]` task is linked to that project
+
+### Bankruptcy Protocol
+- `/prune` — Lists `#to-read` items older than 90 days
+- `/archive_reading` — Moves stale items to `4-Archives/reading/`
+- `/keep` — Resets the date on stale items to today
+
 ### Available Tools
 - `read_vault_file` — Read file content
 - `overwrite_vault_file` — Create or update files
 - `list_vault_files` — Browse PARA directories
 - `move_vault_file` — Move files between directories (tag evolution)
+- `create_reading_stub` — Create a reading queue stub in `3-Resources/`
+- `append_to_file` — Append content to an existing vault file
 
 ## Local Setup (macOS)
 

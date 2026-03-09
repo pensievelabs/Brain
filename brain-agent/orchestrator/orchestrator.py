@@ -7,6 +7,7 @@ from datetime import date
 from interfaces.llm import LLMProvider
 from interfaces.memory import MemoryBackend
 from vault.vault_tools import VaultManager
+from modules.task_scheduler import scan_stale_readings, format_bankruptcy_message, update_frontmatter_date
 from config import Config
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,7 @@ class Orchestrator:
         self.memory = memory
         self.vault = vault
 
-        self._tools = vault.get_tool_schemas()
+        self._tools = vault.get_tool_schemas() + vault.get_reading_tool_schemas()
         self._tool_fns = vault.get_tool_functions()
 
         # Per-user rolling chat history: { user_id: [messages] }
@@ -59,6 +60,14 @@ class Orchestrator:
         logger.info(f"📨 [Orchestrator] New message from user {user_id}")
         logger.info(f"📝 [Orchestrator] Text: {text[:100]}{'...' if len(text) > 100 else ''}")
         logger.info(f"🤖 [Orchestrator] Routed to LLM: {llm.model}")
+
+        # Handle reading-queue slash commands (bypass LLM)
+        if text.strip() == "/prune":
+            return await self._handle_prune()
+        if text.strip() == "/archive_reading":
+            return await self._handle_archive_reading()
+        if text.strip() == "/keep":
+            return await self._handle_keep()
 
         # 2. Semantic search (offload to thread — ChromaDB is sync)
         logger.info("🔍 [Memory] Running semantic search...")
@@ -203,6 +212,10 @@ class Orchestrator:
                         modified_files.append(fn_args.get("filepath", ""))
                     elif fn_name == "move_vault_file":
                         modified_files.append(fn_args.get("destination_filepath", ""))
+                    elif fn_name == "append_to_file":
+                        modified_files.append(fn_args.get("filepath", ""))
+                    elif fn_name == "create_reading_stub":
+                        modified_files.append(fn_args.get("title", "reading-stub"))
                 else:
                     result = f"Unknown function: {fn_name}"
 
@@ -240,3 +253,59 @@ class Orchestrator:
         # Exhausted rounds — final call without tools
         final_resp = await asyncio.to_thread(llm.complete, messages)
         return final_resp.content, modified_files
+
+    # --- Reading Queue Slash Commands ---
+
+    async def _handle_prune(self) -> str:
+        """Scan for stale #to-read items and return a formatted report."""
+        logger.info("📚 [Orchestrator] Running /prune scan...")
+        stale_items = await asyncio.to_thread(
+            scan_stale_readings,
+            self.config.VAULT_DIR,
+            self.config.READING_STALE_DAYS,
+        )
+        msg = format_bankruptcy_message(stale_items)
+        logger.info(f"📚 [Orchestrator] /prune found {len(stale_items)} stale item(s)")
+        return msg
+
+    async def _handle_archive_reading(self) -> str:
+        """Move all stale #to-read items to 4-Archives/reading/."""
+        logger.info("📚 [Orchestrator] Running /archive_reading...")
+        stale_items = await asyncio.to_thread(
+            scan_stale_readings,
+            self.config.VAULT_DIR,
+            self.config.READING_STALE_DAYS,
+        )
+        if not stale_items:
+            return "✅ No stale reading items to archive."
+
+        archived = []
+        for item in stale_items:
+            src = item["filepath"]
+            basename = os.path.basename(src)
+            dst = f"4-Archives/reading/{basename}"
+            result = await asyncio.to_thread(self.vault.move_file, src, dst)
+            archived.append(f"  • `{src}` → `{dst}`")
+            logger.info(f"📁 [Vault] {result}")
+
+        return f"📁 Archived {len(archived)} item(s):\n" + "\n".join(archived)
+
+    async def _handle_keep(self) -> str:
+        """Reset the date on all stale #to-read items to today."""
+        logger.info("📚 [Orchestrator] Running /keep...")
+        stale_items = await asyncio.to_thread(
+            scan_stale_readings,
+            self.config.VAULT_DIR,
+            self.config.READING_STALE_DAYS,
+        )
+        if not stale_items:
+            return "✅ No stale reading items to retain."
+
+        kept = []
+        for item in stale_items:
+            filepath = os.path.join(self.config.VAULT_DIR, item["filepath"])
+            result = await asyncio.to_thread(update_frontmatter_date, filepath)
+            kept.append(f"  • `{item['filepath']}` — date reset to today")
+            logger.info(f"📅 [Scheduler] {result}")
+
+        return f"📅 Retained {len(kept)} item(s) (date reset to today):\n" + "\n".join(kept)

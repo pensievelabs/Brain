@@ -40,3 +40,12 @@ class MemoryBackend(ABC):
         Returns results filtered by the configured similarity threshold.
         """
         ...
+
+    @abstractmethod
+    def search_by_tag(self, query: str, tag: str, n_results: int = 5) -> list[SearchResult]:
+        """
+        Semantic search restricted to documents containing a specific tag.
+
+        Used to find e.g. only #project notes when linking reading materials.
+        """
+        ...

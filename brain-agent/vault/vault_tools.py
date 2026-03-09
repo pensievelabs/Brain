@@ -1,7 +1,9 @@
 import os
+import re
 import glob
 import shutil
 import logging
+from datetime import date
 
 from interfaces.memory import MemoryBackend
 from config import Config
@@ -100,6 +102,78 @@ class VaultManager:
         except Exception as e:
             return f"Error moving file: {e}"
 
+    def append_to_file(self, filepath: str, content: str) -> str:
+        """Append content to the end of an existing vault file and update the index."""
+        try:
+            secure_path = self.get_secure_path(filepath)
+            if not os.path.exists(secure_path):
+                return f"File not found: {secure_path}"
+
+            with open(secure_path, "r", encoding="utf-8") as f:
+                existing = f.read()
+
+            updated = existing.rstrip("\n") + "\n" + content + "\n"
+
+            with open(secure_path, "w", encoding="utf-8") as f:
+                f.write(updated)
+
+            self.memory.upsert(secure_path, updated)
+            return f"Appended to {secure_path}"
+        except Exception as e:
+            return f"Error appending to file: {e}"
+
+    def create_reading_stub(
+        self, title: str, source_url: str, content_type: str, tags: list[str]
+    ) -> str:
+        """
+        Create a reading-queue stub file in 3-Resources/.
+
+        Returns a JSON-like string with filepath and wiki_link.
+        """
+        try:
+            # Generate kebab-case filename
+            slug = re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
+            filename = f"{slug}.md"
+            filepath = f"3-Resources/{filename}"
+            secure_path = self.get_secure_path(filepath)
+
+            # Don't overwrite if it already exists
+            if os.path.exists(secure_path):
+                wiki_link = f"[[{slug}]]"
+                return f'{{"filepath": "{filepath}", "wiki_link": "{wiki_link}", "status": "already_exists"}}'
+
+            # Build content
+            today = date.today().isoformat()
+            tag_list = ["#resource", "#to-read", f"#{content_type}"]
+            for t in tags:
+                tag_str = t if t.startswith("#") else f"#{t}"
+                if tag_str not in tag_list:
+                    tag_list.append(tag_str)
+
+            tag_yaml = "\n".join(f'  - "{t}"' for t in tag_list)
+            content = (
+                f"---\n"
+                f"date: {today}\n"
+                f"tags:\n{tag_yaml}\n"
+                f"---\n\n"
+                f"# {title}\n\n"
+                f"## Source\n"
+                f"{source_url}\n\n"
+                f"## Key Concepts\n\n\n"
+                f"## Notes\n\n"
+            )
+
+            os.makedirs(os.path.dirname(secure_path), exist_ok=True)
+            with open(secure_path, "w", encoding="utf-8") as f:
+                f.write(content)
+
+            self.memory.upsert(secure_path, content)
+
+            wiki_link = f"[[{slug}]]"
+            return f'{{"filepath": "{filepath}", "wiki_link": "{wiki_link}", "status": "created"}}'
+        except Exception as e:
+            return f"Error creating reading stub: {e}"
+
     # --- Tool Dispatch ---
 
     def get_tool_functions(self) -> dict:
@@ -112,6 +186,15 @@ class VaultManager:
             "list_vault_files": lambda args: self.list_files(args.get("directory", "")),
             "move_vault_file": lambda args: self.move_file(
                 args.get("source_filepath", ""), args.get("destination_filepath", "")
+            ),
+            "create_reading_stub": lambda args: self.create_reading_stub(
+                args.get("title", ""),
+                args.get("source_url", ""),
+                args.get("content_type", "article"),
+                args.get("tags", []),
+            ),
+            "append_to_file": lambda args: self.append_to_file(
+                args.get("filepath", ""), args.get("content", "")
             ),
         }
 
@@ -203,6 +286,71 @@ class VaultManager:
                             },
                         },
                         "required": ["source_filepath", "destination_filepath"],
+                    },
+                },
+            },
+        ]
+
+    @staticmethod
+    def get_reading_tool_schemas() -> list[dict]:
+        """Returns tool schemas for reading queue operations."""
+        return [
+            {
+                "type": "function",
+                "function": {
+                    "name": "create_reading_stub",
+                    "description": (
+                        "Creates a reading-queue stub file in 3-Resources/ for a book, "
+                        "article, or URL. Returns the filepath and wiki-link. Use this when "
+                        "the user shares a reading recommendation, book title, or article URL."
+                    ),
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "title": {
+                                "type": "string",
+                                "description": "Title of the book, article, or resource.",
+                            },
+                            "source_url": {
+                                "type": "string",
+                                "description": "URL or source reference. Use empty string if not a URL.",
+                            },
+                            "content_type": {
+                                "type": "string",
+                                "enum": ["book", "article"],
+                                "description": "Type of reading material.",
+                            },
+                            "tags": {
+                                "type": "array",
+                                "items": {"type": "string"},
+                                "description": "Additional context tags (e.g., 'psychology', 'ai').",
+                            },
+                        },
+                        "required": ["title", "source_url", "content_type"],
+                    },
+                },
+            },
+            {
+                "type": "function",
+                "function": {
+                    "name": "append_to_file",
+                    "description": (
+                        "Appends content to the end of an existing vault file. Use this to "
+                        "add reading tasks to a project's Next Actions section."
+                    ),
+                    "parameters": {
+                        "type": "object",
+                        "properties": {
+                            "filepath": {
+                                "type": "string",
+                                "description": "The vault filepath to append to.",
+                            },
+                            "content": {
+                                "type": "string",
+                                "description": "The content to append (e.g., '- [ ] Read: [[wiki-link]]').",
+                            },
+                        },
+                        "required": ["filepath", "content"],
                     },
                 },
             },
