@@ -21,6 +21,10 @@ class Config:
         self.AGENT_MD_PATH = os.path.join(self.AGENT_DIR, "agent.md")
         self.PROMPTS_DIR = os.path.join(self.AGENT_DIR, "prompts")
 
+        # Calendar configuration
+        self.CALENDAR_CREDENTIALS_PATH = os.path.join(self.AGENT_DIR, "credentials.json")
+        self.CALENDAR_TOKEN_PATH = os.path.join(self.AGENT_DIR, "token.json")
+
         # Model configuration — change these to swap model tiers
         self.DEFAULT_MODEL = os.environ.get("DEFAULT_MODEL", "gemini/gemini-2.5-flash")
         self.PRO_MODEL = os.environ.get("PRO_MODEL", "gemini/gemini-2.5-pro")

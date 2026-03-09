@@ -7,6 +7,7 @@ from interfaces.llm import LLMProvider
 from interfaces.memory import MemoryBackend
 from vault.vault_tools import VaultManager
 from modules.task_scheduler import scan_stale_readings, format_bankruptcy_message, update_frontmatter_date
+from modules.calendar_tools import CalendarManager
 from config import Config
 from utils.logger import get_logger
 
@@ -41,9 +42,10 @@ class Orchestrator:
         self.pro_llm = pro_llm
         self.memory = memory
         self.vault = vault
+        self.calendar = CalendarManager(config)
 
-        self._tools = vault.get_tool_schemas() + vault.get_reading_tool_schemas()
-        self._tool_fns = vault.get_tool_functions()
+        self._tools = vault.get_tool_schemas() + vault.get_reading_tool_schemas() + self.calendar.get_tool_schemas()
+        self._tool_fns = {**vault.get_tool_functions(), **self.calendar.get_tool_functions()}
 
         # Per-user rolling chat history: { user_id: [messages] }
         self._chat_history: dict[str, list[dict]] = {}

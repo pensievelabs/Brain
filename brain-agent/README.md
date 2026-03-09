@@ -102,6 +102,7 @@ Book recommendations, article URLs, or reading suggestions are classified as `re
 - `move_vault_file` — Move files between directories (tag evolution)
 - `create_reading_stub` — Create a reading queue stub in `3-Resources/`
 - `append_to_file` — Append content to an existing vault file
+- **Calendar Tools**: `list_calendars()`, `get_upcoming_events()`, `create_calendar_event()`
 
 ## Local Setup (macOS)
 
@@ -125,7 +126,19 @@ ALLOWED_USER_ID="your_id"
 # PRO_MODEL="gemini/gemini-2.5-pro"
 ```
 
-### 3. Usage
+### 3. Google Calendar Configuration (Optional)
+If you want BrainBot to manage your Google Calendar:
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a project, enable the **Google Calendar API**, and configure the OAuth consent screen.
+3. Create OAuth 2.0 Client ID credentials (Desktop app) and download the JSON file.
+4. Save it as `credentials.json` in the `brain-agent` directory.
+5. Run the local auth script to generate a token:
+   ```bash
+   python auth_calendar.py
+   ```
+   This will open a browser to authenticate. A `token.json` file will be generated. BrainBot will use this token seamlessly.
+
+### 4. Usage
 Run the bot:
 ```bash
 python bot.py

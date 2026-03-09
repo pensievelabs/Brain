@@ -16,3 +16,6 @@ __pycache__/
 # Temp files
 temp_voice_*.ogg
 *.log
+
+token.json
+credentials.json
