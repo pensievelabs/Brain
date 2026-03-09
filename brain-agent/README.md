@@ -36,6 +36,7 @@ brain-agent/
 ├── modules/                     # Capability modules
 │   └── task_scheduler.py        # Reading queue bankruptcy protocol
 │
+├── tests/                       # Unit and integration tests
 ├── prompts/                     # Per-module system prompts (.md)
 │   ├── classifier.md
 │   ├── coach.md

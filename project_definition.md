@@ -20,6 +20,7 @@ Uses a **modular, interface-driven architecture** — messaging, LLM, memory, an
 ├── orchestrator/                # Central brain: search → prompt → LLM → tools → response
 ├── modules/                     # Capability modules
 │   └── task_scheduler.py        # Reading queue bankruptcy protocol
+├── tests/                       # Unit and integration tests
 ├── prompts/                     # Per-module system prompts (classifier, coach, explore)
 ├── briefing.py                  # Daily cron script for morning summaries
 ├── chroma_db/                   # ChromaDB persistent vector store
