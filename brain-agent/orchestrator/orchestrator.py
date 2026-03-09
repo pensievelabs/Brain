@@ -1,7 +1,6 @@
 import os
 import json
 import asyncio
-import logging
 from datetime import date
 
 from interfaces.llm import LLMProvider
@@ -9,8 +8,9 @@ from interfaces.memory import MemoryBackend
 from vault.vault_tools import VaultManager
 from modules.task_scheduler import scan_stale_readings, format_bankruptcy_message, update_frontmatter_date
 from config import Config
+from utils.logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class Orchestrator:

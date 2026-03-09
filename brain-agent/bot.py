@@ -6,7 +6,6 @@ All logic lives in orchestrator/, providers/, memory/, vault/, and transports/.
 """
 
 import asyncio
-import logging
 import nest_asyncio
 
 from config import Config
@@ -15,16 +14,13 @@ from providers.gemini_provider import GeminiProvider
 from vault.vault_tools import VaultManager
 from orchestrator.orchestrator import Orchestrator
 from transports.telegram_transport import TelegramTransport
+from utils.logger import get_logger
 
 # Allow nested event loops (needed by some underlying libraries)
 nest_asyncio.apply()
 
 # --- Logging ---
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO,
-)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 async def main():

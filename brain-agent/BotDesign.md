@@ -43,6 +43,9 @@ brain-agent/
 ├── orchestrator/                # Central routing and workflow engine
 │   └── orchestrator.py          # Orchestrator class
 │
+├── utils/                       # Shared utilities
+│   └── logger.py                # Centralized daily logging
+│
 ├── modules/                     # Future capability modules
 │   └── (coach, calendar, journal, task_scheduler, ...)
 │

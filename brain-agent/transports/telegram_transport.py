@@ -1,4 +1,3 @@
-import logging
 from typing import Callable, Awaitable
 
 from telegram import Update
@@ -6,8 +5,9 @@ from telegram.ext import Application, MessageHandler, filters, ContextTypes
 
 from interfaces.messaging import MessagingTransport
 from config import Config
+from utils.logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class TelegramTransport(MessagingTransport):

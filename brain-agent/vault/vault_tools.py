@@ -2,13 +2,13 @@ import os
 import re
 import glob
 import shutil
-import logging
 from datetime import date
 
 from interfaces.memory import MemoryBackend
 from config import Config
+from utils.logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class VaultManager:
@@ -51,7 +51,9 @@ class VaultManager:
         try:
             secure_path = self.get_secure_path(filepath)
             with open(secure_path, "r", encoding="utf-8") as f:
-                return f.read()
+                content = f.read()
+            logger.info(f"📁 [Vault] Read file: {secure_path}")
+            return content
         except Exception as e:
             return f"Error reading file: {e}"
 
@@ -63,6 +65,7 @@ class VaultManager:
             with open(secure_path, "w", encoding="utf-8") as f:
                 f.write(new_content)
             self.memory.upsert(secure_path, new_content)
+            logger.info(f"📁 [Vault] Overwrite/Create file: {secure_path}")
             return f"Successfully saved to {secure_path}"
         except Exception as e:
             return f"Error writing file: {e}"
@@ -98,6 +101,7 @@ class VaultManager:
                 content = f.read()
             self.memory.upsert(secure_dst, content)
 
+            logger.info(f"📁 [Vault] Moved file: {secure_src} → {secure_dst}")
             return f"Moved {secure_src} → {secure_dst}"
         except Exception as e:
             return f"Error moving file: {e}"
@@ -118,6 +122,7 @@ class VaultManager:
                 f.write(updated)
 
             self.memory.upsert(secure_path, updated)
+            logger.info(f"📁 [Vault] Appended to file: {secure_path}")
             return f"Appended to {secure_path}"
         except Exception as e:
             return f"Error appending to file: {e}"
@@ -169,6 +174,7 @@ class VaultManager:
 
             self.memory.upsert(secure_path, content)
 
+            logger.info(f"📁 [Vault] Created reading stub: {secure_path}")
             wiki_link = f"[[{slug}]]"
             return f'{{"filepath": "{filepath}", "wiki_link": "{wiki_link}", "status": "created"}}'
         except Exception as e:

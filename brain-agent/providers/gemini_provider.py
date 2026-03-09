@@ -1,9 +1,9 @@
-import logging
 import litellm
 
 from interfaces.llm import LLMProvider, LLMResponse
+from utils.logger import get_logger
 
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class GeminiProvider(LLMProvider):
@@ -42,10 +42,27 @@ class GeminiProvider(LLMProvider):
             kwargs["tools"] = tools
             kwargs["tool_choice"] = tool_choice
 
-        logger.info(f"GeminiProvider calling {self.model} ({len(messages)} messages)")
+        logger.info(f"🧠 [LLM] Calling {self.model} with {len(messages)} messages.")
+        for i, msg in enumerate(messages):
+            role = msg.get('role', 'unknown')
+            content = msg.get('content', '')
+            # Truncate extremely long system prompts if necessary, but keep user/assistant clear
+            if isinstance(content, str) and len(content) > 500 and role == 'system':
+                display_content = content[:500] + "... [System Prompt Truncated]"
+            else:
+                display_content = content
+            logger.info(f"   ► Msg {i} [{role.upper()}]: {display_content}")
 
         response = litellm.completion(**kwargs)
         message = response.choices[0].message
+
+        logger.info(f"🧠 [LLM] Received response from {self.model}:")
+        if message.content:
+            logger.info(f"   ◄ Content: {message.content}")
+        if message.tool_calls:
+            logger.info(f"   ◄ Tool Calls: {len(message.tool_calls)}")
+            for tc in message.tool_calls:
+                logger.info(f"       - {tc.function.name}({tc.function.arguments})")
 
         return LLMResponse(
             content=message.content,
