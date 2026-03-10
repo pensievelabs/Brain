@@ -13,6 +13,8 @@ class Config:
             self.ALLOWED_USER_ID = int(self.ALLOWED_USER_ID)
 
         self.TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+        self.SLACK_BOT_TOKEN = os.environ.get("SLACK_BOT_TOKEN")
+        self.SLACK_APP_TOKEN = os.environ.get("SLACK_APP_TOKEN")
         self.GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
         self.VAULT_DIR = os.path.expanduser("~/Documents/Brain/vault")
@@ -43,10 +45,12 @@ class Config:
         missing = []
         if not self.ALLOWED_USER_ID:
             missing.append("ALLOWED_USER_ID")
-        if not self.TELEGRAM_BOT_TOKEN:
-            missing.append("TELEGRAM_BOT_TOKEN")
         if not self.GEMINI_API_KEY:
             missing.append("GEMINI_API_KEY")
+        
+        if not self.TELEGRAM_BOT_TOKEN and not (self.SLACK_BOT_TOKEN and self.SLACK_APP_TOKEN):
+            logger.warning("No messaging tokens (Telegram or Slack) provided. The bot may not be able to receive messages.")
+
         if missing:
             logger.error(f"Missing required environment variables: {', '.join(missing)}")
 

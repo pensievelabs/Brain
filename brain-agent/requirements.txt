@@ -9,3 +9,4 @@ python-dotenv==1.2.2
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
+slack_bolt==1.18.1
